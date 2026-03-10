@@ -13,3 +13,4 @@
 !gradle/wrapper/**
 
 !locales
+!locales/**
