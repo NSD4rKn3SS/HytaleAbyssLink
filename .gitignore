@@ -1,0 +1,13 @@
+*
+!.gitignore
+!README.md
+!LICENSE
+
+!src/
+!src/**
+
+!gradlew
+!gradlew.bat
+!gradle/
+!gradle/wrapper/
+!gradle/wrapper/**
