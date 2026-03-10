@@ -22,11 +22,23 @@ Originally forked from [dkoz/HytaleDiscordIntegration](https://github.com/dkoz/H
 | **Server Status** | Live status updates to Discord channels |
 | **Customization** | Flexible message formatting and channel configuration |
 | **Latest API Support** | Compatible with the newest Hytale Server API versions |
+| **Multilanguage support** | Added support for multiple languages |
+| **Permission system** | Set permissions for using mod functionality |
+| **Custom default avatars** | For both unlinked players and the bot |
+| **Smart avatar caching** | Reduces requests and respects Discord rate limits (with fallback) |
+| **Webhook-based messages** | For seamless chatting in Discord |
+
+
+## Languages
+
+* Pre-translated locales can be found in the repository (translation made by AI), the mod ships with English only by default
+* Currently supported are:
+  * English, German, Czech, French, Spanish, Hungarian
 
 ## Tutorial
 ### 1. Download and place the mod
 
-1. Download the latest (`AbyssLink-1.0.0.jar`) release file.
+1. Download the latest (`AbyssLink-1.0.1.jar`) release file.
 2. Stop your Hytale server if it is running.
 3. Copy the `.jar` into your server’s **mods** folder.
 
@@ -50,6 +62,8 @@ Example:
 <your-server>/
 └─ mods/
   └─ AbyssLink/
+    └─ locales
+      └─ en_US.json
     └─ config.yml
 ```
 
@@ -58,7 +72,8 @@ Example:
 1. Open the generated config file in a text editor.
 2. Fill in your Discord settings (bot token, guild/server ID, channel IDs).
 3. Set message/formatting options as needed.
-4. Save the file.
+4. (Optionally) Set the language you'd like to use (don't forget to copy the language file into the locales folder)
+5. Save the file.
 
 ### 4. Discord bot setup checklist
 
