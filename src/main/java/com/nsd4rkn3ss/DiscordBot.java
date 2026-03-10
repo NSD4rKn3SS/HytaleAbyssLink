@@ -152,9 +152,9 @@ public class DiscordBot extends ListenerAdapter {
     private void handleLinkCommand(MessageReceivedEvent event) {
         String discordId = event.getAuthor().getId();
         String discordUsername = event.getAuthor().getName();
-        LocaleManager locale = DiscordIntegration.getInstance().getLocaleManager();
+        LocaleManager locale = AbyssLink.getInstance().getLocaleManager();
 
-        LinkCodeManager linkManager = DiscordIntegration.getInstance().getLinkCodeManager();
+        LinkCodeManager linkManager = AbyssLink.getInstance().getLinkCodeManager();
         String code = linkManager.generateCode(discordId, discordUsername);
 
         MessageEmbed embed = new EmbedBuilder()
@@ -195,9 +195,9 @@ public class DiscordBot extends ListenerAdapter {
     private void handleProfileCommand(MessageReceivedEvent event, String message) {
         String[] parts = message.split("\\s+");
         String discordId = event.getAuthor().getId();
-        LocaleManager locale = DiscordIntegration.getInstance().getLocaleManager();
+        LocaleManager locale = AbyssLink.getInstance().getLocaleManager();
         
-        PlayerDataStorage storage = DiscordIntegration.getInstance().getPlayerDataStorage();
+        PlayerDataStorage storage = AbyssLink.getInstance().getPlayerDataStorage();
         PlayerData playerData = null;
         String targetUsername = null;
         
@@ -321,7 +321,7 @@ public class DiscordBot extends ListenerAdapter {
     }
     
     private void sendPlayersPage(MessageReceivedEvent event, java.util.List<String> playerNames, int page, int totalPages, int playersPerPage) {
-        LocaleManager locale = DiscordIntegration.getInstance().getLocaleManager();
+        LocaleManager locale = AbyssLink.getInstance().getLocaleManager();
         int startIndex = (page - 1) * playersPerPage;
         int endIndex = Math.min(startIndex + playersPerPage, playerNames.size());
         
@@ -444,7 +444,7 @@ public class DiscordBot extends ListenerAdapter {
             // Get Discord ID if player is linked
             final String discordId;
             if (playerUuid != null) {
-                PlayerDataStorage storage = DiscordIntegration.getInstance().getPlayerDataStorage();
+                PlayerDataStorage storage = AbyssLink.getInstance().getPlayerDataStorage();
                 PlayerData playerData = storage.getPlayerData(playerUuid);
                 if (playerData != null) {
                     discordId = playerData.getDiscordId();

@@ -63,7 +63,7 @@ public class PlayerDeathSystem extends DeathSystems.OnDeathSystem {
             }
             
             // Notify Discord via the plugin instance
-            DiscordIntegration plugin = DiscordIntegration.getInstance();
+            AbyssLink plugin = AbyssLink.getInstance();
             if (plugin != null) {
                 plugin.notifyPlayerDeath(playerName, cause);
             }

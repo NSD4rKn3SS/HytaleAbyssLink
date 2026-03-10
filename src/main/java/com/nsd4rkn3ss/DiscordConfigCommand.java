@@ -32,7 +32,7 @@ public class DiscordConfigCommand extends AbstractPlayerCommand {
             @Nonnull PlayerRef player,
             @Nonnull World world
     ) {
-        LocaleManager locale = DiscordIntegration.getInstance().getLocaleManager();
+        LocaleManager locale = AbyssLink.getInstance().getLocaleManager();
         
         // Check permission using Hytale's permission system
         // Get the player entity from the world to access hasPermission()
@@ -77,7 +77,7 @@ public class DiscordConfigCommand extends AbstractPlayerCommand {
     }
 
     private void showConfigHelp(PlayerRef player) {
-        LocaleManager locale = DiscordIntegration.getInstance().getLocaleManager();
+        LocaleManager locale = AbyssLink.getInstance().getLocaleManager();
         player.sendMessage(Message.raw(locale.getMessage("command.discord.help.title")));
         player.sendMessage(Message.raw(locale.getMessage("command.discord.help.get")));
         player.sendMessage(Message.raw(locale.getMessage("command.discord.help.set")));
@@ -87,8 +87,8 @@ public class DiscordConfigCommand extends AbstractPlayerCommand {
     }
 
     private void getConfigValue(PlayerRef player, String fieldName) {
-        DiscordConfig config = DiscordIntegration.getInstance().config;
-        LocaleManager locale = DiscordIntegration.getInstance().getLocaleManager();
+        DiscordConfig config = AbyssLink.getInstance().config;
+        LocaleManager locale = AbyssLink.getInstance().getLocaleManager();
         
         try {
             Object value = getFieldValue(config, fieldName);
@@ -99,8 +99,8 @@ public class DiscordConfigCommand extends AbstractPlayerCommand {
     }
 
     private void setConfigValue(PlayerRef player, String fieldName, String value) {
-        DiscordConfig config = DiscordIntegration.getInstance().config;
-        LocaleManager locale = DiscordIntegration.getInstance().getLocaleManager();
+        DiscordConfig config = AbyssLink.getInstance().config;
+        LocaleManager locale = AbyssLink.getInstance().getLocaleManager();
         
         try {
             setFieldValue(config, fieldName, value);
@@ -113,8 +113,8 @@ public class DiscordConfigCommand extends AbstractPlayerCommand {
     }
 
     private void listConfigValues(PlayerRef player) {
-        DiscordConfig config = DiscordIntegration.getInstance().config;
-        LocaleManager locale = DiscordIntegration.getInstance().getLocaleManager();
+        DiscordConfig config = AbyssLink.getInstance().config;
+        LocaleManager locale = AbyssLink.getInstance().getLocaleManager();
         
         player.sendMessage(Message.raw(locale.getMessage("command.discord.list.title")));
         player.sendMessage(Message.raw("enabled: " + config.isEnabled()));
@@ -131,9 +131,9 @@ public class DiscordConfigCommand extends AbstractPlayerCommand {
     }
 
     private void reloadConfig(PlayerRef player) {
-        LocaleManager locale = DiscordIntegration.getInstance().getLocaleManager();
+        LocaleManager locale = AbyssLink.getInstance().getLocaleManager();
         try {
-            DiscordIntegration.getInstance().loadConfig();
+            AbyssLink.getInstance().loadConfig();
             player.sendMessage(Message.raw(locale.getMessage("command.discord.reload.success")));
         } catch (Exception e) {
             player.sendMessage(Message.raw(locale.getMessage("command.discord.reload.error", "error", e.getMessage())));
@@ -165,7 +165,7 @@ public class DiscordConfigCommand extends AbstractPlayerCommand {
             case "topicPlayerCountFormat":
                 return config.getTopicPlayerCountFormat();
             default:
-                LocaleManager locale = DiscordIntegration.getInstance().getLocaleManager();
+                LocaleManager locale = AbyssLink.getInstance().getLocaleManager();
                 throw new Exception(locale.getMessage("command.discord.field.unknown", "field", fieldName));
         }
     }
@@ -206,13 +206,13 @@ public class DiscordConfigCommand extends AbstractPlayerCommand {
                 config.setTopicPlayerCountFormat(value.replace("\"", ""));
                 break;
             default:
-                LocaleManager locale = DiscordIntegration.getInstance().getLocaleManager();
+                LocaleManager locale = AbyssLink.getInstance().getLocaleManager();
                 throw new Exception(locale.getMessage("command.discord.field.unknown", "field", fieldName));
         }
     }
 
     private void saveConfig(DiscordConfig config) {
-        File configFile = new File("mods/DiscordIntegration/config.json");
-        DiscordIntegration.getInstance().saveConfig(configFile);
+        File configFile = new File("mods/AbyssLink/config.json");
+        AbyssLink.getInstance().saveConfig(configFile);
     }
 }

@@ -15,7 +15,7 @@ public class MessageRelay {
 
     public void sendToDiscord(UUID playerUuid, String playerName, String message) {
         System.out.println("[AbyssLink Discord] MessageRelay.sendToDiscord called for: " + playerName);
-        DiscordBot bot = DiscordIntegration.getInstance().discordBot;
+        DiscordBot bot = AbyssLink.getInstance().discordBot;
         if (bot == null) {
             System.out.println("[AbyssLink Discord] Bot is null!");
             return;
@@ -39,7 +39,7 @@ public class MessageRelay {
     }
 
     public void sendJoinMessage(String playerName) {
-        DiscordBot bot = DiscordIntegration.getInstance().discordBot;
+        DiscordBot bot = AbyssLink.getInstance().discordBot;
         if (bot != null && bot.isConnected()) {
             String formatted = config.getMessageFormat().getJoinMessage()
                 .replace("{player}", playerName);
@@ -54,7 +54,7 @@ public class MessageRelay {
     }
 
     public void sendLeaveMessage(String playerName) {
-        DiscordBot bot = DiscordIntegration.getInstance().discordBot;
+        DiscordBot bot = AbyssLink.getInstance().discordBot;
         if (bot != null && bot.isConnected()) {
             String formatted = config.getMessageFormat().getLeaveMessage()
                 .replace("{player}", playerName);
@@ -73,7 +73,7 @@ public class MessageRelay {
             return;
         }
 
-        DiscordBot bot = DiscordIntegration.getInstance().discordBot;
+        DiscordBot bot = AbyssLink.getInstance().discordBot;
         if (bot != null && bot.isConnected()) {
             String causeText = (cause == null || cause.isEmpty()) ? "unknown" : cause;
             String formatted = config.getMessageFormat().getDeathMessage()
@@ -90,7 +90,7 @@ public class MessageRelay {
     }
 
     public void sendServerStartMessage() {
-        DiscordBot bot = DiscordIntegration.getInstance().discordBot;
+        DiscordBot bot = AbyssLink.getInstance().discordBot;
         if (bot != null && bot.isConnected()) {
             String formatted = config.getMessageFormat().getServerStartMessage();
             
@@ -104,7 +104,7 @@ public class MessageRelay {
     }
 
     public void sendServerStopMessage() {
-        DiscordBot bot = DiscordIntegration.getInstance().discordBot;
+        DiscordBot bot = AbyssLink.getInstance().discordBot;
         if (bot != null && bot.isConnected()) {
             String formatted = config.getMessageFormat().getServerStopMessage();
             

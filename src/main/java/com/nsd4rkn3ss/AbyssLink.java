@@ -25,9 +25,9 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
-public class DiscordIntegration extends JavaPlugin {
+public class AbyssLink extends JavaPlugin {
     
-    private static DiscordIntegration instance;
+    private static AbyssLink instance;
     
     public DiscordConfig config;
     DiscordBot discordBot;
@@ -37,7 +37,7 @@ public class DiscordIntegration extends JavaPlugin {
     private LocaleManager localeManager;
     private final Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
-    public DiscordIntegration(@Nonnull JavaPluginInit init) {
+    public AbyssLink(@Nonnull JavaPluginInit init) {
         super(init);
         instance = this;
     }
@@ -50,7 +50,7 @@ public class DiscordIntegration extends JavaPlugin {
 
         loadConfig();
         
-        File dataFolder = new File("mods/DiscordIntegration");
+        File dataFolder = new File("mods/AbyssLink");
         playerDataStorage = new PlayerDataStorage(dataFolder);
         linkCodeManager = new LinkCodeManager();
         
@@ -188,7 +188,7 @@ public class DiscordIntegration extends JavaPlugin {
     }
 
     public void loadConfig() {
-        File configFile = new File("mods/DiscordIntegration/config.json");
+        File configFile = new File("mods/AbyssLink/config.json");
         
         if (!configFile.exists()) {
             configFile.getParentFile().mkdirs();
@@ -324,7 +324,7 @@ public class DiscordIntegration extends JavaPlugin {
         }
     }
 
-    public static DiscordIntegration getInstance() {
+    public static AbyssLink getInstance() {
         return instance;
     }
     

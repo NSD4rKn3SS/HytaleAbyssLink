@@ -34,7 +34,7 @@ public class LinkCommand extends AbstractPlayerCommand {
         String input = context.getInputString().trim();
         String[] parts = input.split("\\s+");
         
-        DiscordIntegration plugin = DiscordIntegration.getInstance();
+        AbyssLink plugin = AbyssLink.getInstance();
         LocaleManager locale = plugin.getLocaleManager();
         
         if (parts.length < 2) {
