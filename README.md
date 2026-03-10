@@ -1,60 +1,93 @@
-# DiscordIntegration
+# AbyssLink a Hytale Discord Integration
 
-Discord Integration offers a two way chat bridge between your Hytale server and Discord server. This mod also offers you the ability to link your in-game account to the discord bot.
+## Overview
+
+Two-way chat synchronization for Hytale servers with Discord communities. 
+
+Originally forked from [dkoz/HytaleDiscordIntegration](https://github.com/dkoz/HytaleDiscordIntegration), this project focuses on simplicity and maintainability with support for the latest server binary versions.
 
 ## Requirements
 
-- Java 25+
-- Hytale Server API (`HytaleServer.jar`)
+- **Java 25+**
+- **Hytale Server API** (`HytaleServer.jar`)
 
-## A word from me
+## Features
 
-Using this API list: https://rentry.co/gykiza2m
+| Feature | Description |
+|---------|-------------|
+| **Chat Sync** | Real-time message synchronization between Hytale and Discord |
+| **Player Notifications** | Join/leave event alerts in Discord |
+| **Commands** | Execute server commands through Discord |
+| **Player List** | Keep Discord updated with active players |
+| **Server Status** | Live status updates to Discord channels |
+| **Customization** | Flexible message formatting and channel configuration |
+| **Latest API Support** | Compatible with the newest Hytale Server API versions |
 
-and this guide: https://hytalemodding.dev/en/docs/guides/plugin/setting-up-env
+## Tutorial
+### 1. Download and place the mod
 
-PS.: I did have to use AI help, because I'm merely a webdev and have only very basic Java experience.
+1. Download the latest (`AbyssLink-1.0.0.jar`) release file.
+2. Stop your Hytale server if it is running.
+3. Copy the `.jar` into your server’s **mods** folder.
 
-## Additions by this fork, as of latest release
+Example:
+```text
+<your-server>/
+└─ mods/
+  └─ AbyssLink-<version>.jar
+```
 
-- **Configurable death messages**
-  - Toggle death messages on/off with `enableDeathMessages`.
-  - Fully customizable format via `deathMessage`, including placeholders like `{player}` and `{cause}`.
+### 2. Start the server once (generate config)
 
-- **Discord server status notifications**
-  - Optional messages when the server starts and stops, using `serverStartMessage` and `serverStopMessage`.
+1. Start the server.
+2. Wait until startup is complete.
+3. Stop the server again.
 
-- **Safe config upgrades**
-  - Updating the plugin now only adds new settings; existing values are preserved and not overwritten.
+On first run, AbyssLink creates its configuration directory inside the **mods** folder.
 
-- **Discord quality-of-life improvements**
-  - Run account linking directly from the messaging channel (not just the command channel).
-  - Optionally display current player count in the messaging channel topic with:
-    - `showPlayerCountInTopic` (on/off)
-    - `topicPlayerCountFormat` (e.g. `"Players online: {online}"`).
+Example:
+```text
+<your-server>/
+└─ mods/
+  └─ AbyssLink/
+    └─ config.yml
+```
 
-- **Webhook-based message relaying**
-  - Enable with `useWebhooks` to relay messages as the player, including their Discord avatar when accounts are linked.
-  - Customize server/system message identity:
-    - `serverName` for display name
-    - `serverAvatarUrl` for bot avatar.
-  - Configure a default avatar for unlinked players via `defaultPlayerAvatarUrl`.
-  - Smart avatar caching reduces requests and respects Discord rate limits (falls back to Discord’s default avatar if none is set).
+### 3. Configure AbyssLink
 
-- **Permission-gated `/discord` command**
-  - New permission: `discordintegration.discord`.
-  - Uses Hytale’s built-in permission system (via `/perm`).
-  - Supports:
-    - `/discord get <field>`
-    - `/discord set <field> <value>`
-    - `/discord list`
-    - `/discord reload`
-  - Clear “permission denied” message when users lack the required permission.
-- **Full Internationalization (i18n) Support**
-  - All user-facing text is now translatable!
-  - Configure language via `locale` in config.json (e.g., `"locale": "es_ES"`)
-  - Includes complete Spanish and French translations
-  - Easy to add new languages - just copy and translate the JSON file
-  - Support for dynamic placeholders (e.g., `{player}`, `{message}`)
-  - Hot-reload translations with `/discord reload`
-  - See **I18N_GUIDE.md** for complete documentation
+1. Open the generated config file in a text editor.
+2. Fill in your Discord settings (bot token, guild/server ID, channel IDs).
+3. Set message/formatting options as needed.
+4. Save the file.
+
+### 4. Discord bot setup checklist
+
+- Create a Discord application and bot in the Discord Developer Portal.
+- Copy the bot token into the config.
+- Invite the bot to your server with required permissions:
+  - Read Messages / View Channels  
+  - Send Messages  
+  - Manage Webhooks (if used)  
+  - Message History access
+- Enable any required intents in the bot settings (for member/player sync features).
+
+### 5. Start and verify
+
+1. Start the Hytale server again.
+2. Check server logs for successful AbyssLink startup.
+3. Send a test message in-game and in Discord to confirm two-way sync.
+4. Confirm join/leave notifications and command features work in the configured channel.
+
+### 6. Updating the mod
+
+1. Stop the server.
+2. Replace the old AbyssLink `.jar` in `mods/` with the new version.
+3. Start the server and review logs for config migration warnings.
+4. Re-check config values if new options were added.
+
+### Troubleshooting
+
+- **No config generated:** verify the `.jar` is directly in `mods/` and server started without load errors.
+- **Bot not responding:** recheck token, channel IDs, and bot permissions.
+- **No chat sync:** confirm the configured channels are correct and not blocked by Discord role permissions.
+- **Startup errors after update:** compare your config with the latest example/default config and add missing fields.
