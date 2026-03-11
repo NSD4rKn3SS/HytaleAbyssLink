@@ -25,6 +25,7 @@ Originally forked from [dkoz/HytaleDiscordIntegration](https://github.com/dkoz/H
 | **Multilanguage support** | Added support for multiple languages |
 | **Permission system** | Set permissions for using mod functionality |
 | **Custom default avatars** | For both unlinked players and the bot |
+| **In-game avatars in Discord** | Using [HytaleTracker](https://hytaletracker.org/) Discord now has your In-Game avatar when using webhooks |
 | **Smart avatar caching** | Reduces requests and respects Discord rate limits (with fallback) |
 | **Webhook-based messages** | For seamless chatting in Discord |
 
@@ -38,7 +39,7 @@ Originally forked from [dkoz/HytaleDiscordIntegration](https://github.com/dkoz/H
 ## Tutorial
 ### 1. Download and place the mod
 
-1. Download the latest [`AbyssLink-1.0.2.jar`](https://github.com/NSD4rKn3SS/HytaleAbyssLink/releases/download/v1.0.2/AbyssLink-1.0.2.jar) release file.
+1. Download the latest [`AbyssLink-1.0.3.jar`](https://github.com/NSD4rKn3SS/HytaleAbyssLink/releases/download/v1.0.3/AbyssLink-1.0.3.jar) release file.
 2. Stop your Hytale server if it is running.
 3. Copy the downloaded `.jar` into your server’s **mods** folder.
 

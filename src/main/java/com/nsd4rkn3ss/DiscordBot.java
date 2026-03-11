@@ -461,11 +461,12 @@ public class DiscordBot extends ListenerAdapter {
 
     /**
      * Dispatches a message to Discord using webhooks if enabled, with avatar support.
-     * Automatically fetches and caches Discord profile pictures for linked players.
+     * Tries the Hytale Tracker in-game avatar first, then falls back to the linked
+     * Discord profile picture, then to the configured default avatar.
      * @param playerUuid The player's UUID (can be null for server messages)
      * @param name The display name to use
      * @param content The message content
-     * @param fallbackAvatar The avatar URL to use if player is not linked (can be null)
+     * @param fallbackAvatar The avatar URL to use if no better avatar is found (can be null)
      */
     public void dispatchToDiscord(UUID playerUuid, String name, String content, String fallbackAvatar) {
         // If webhooks are disabled, use standard bot message
@@ -482,51 +483,97 @@ public class DiscordBot extends ListenerAdapter {
         AvatarCache.setExpireTime(config.getAvatarCacheMinutes());
 
         try {
-            // Get Discord ID if player is linked
-            final String discordId;
+            // If we have a player UUID, try Hytale Tracker avatar first
             if (playerUuid != null) {
-                PlayerDataStorage storage = AbyssLink.getInstance().getPlayerDataStorage();
-                PlayerData playerData = storage.getPlayerData(playerUuid);
-                if (playerData != null) {
-                    discordId = playerData.getDiscordId();
-                } else {
-                    discordId = null;
-                }
-            } else {
-                discordId = null;
-            }
+                String uuidStr = playerUuid.toString();
+                String hytaleKey = "hytale:" + uuidStr;
+                String cachedHytaleAvatar = AvatarCache.get(hytaleKey);
 
-            // If no Discord link, send immediately with fallback avatar
-            if (discordId == null || jda == null) {
-                sendWebhookMessage(name, content, fallbackAvatar);
-                return;
-            }
-
-            // Try to get avatar from cache
-            String cachedAvatar = AvatarCache.get(discordId);
-            if (cachedAvatar != null) {
-                sendWebhookMessage(name, content, cachedAvatar);
-                return;
-            }
-
-            // Fetch avatar from Discord API asynchronously
-            jda.retrieveUserById(discordId).queue(
-                    user -> {
-                        String avatar = user.getEffectiveAvatarUrl();
-                        AvatarCache.put(discordId, avatar);
-                        sendWebhookMessage(name, content, avatar);
-                    },
-                    throwable -> {
-                        // If fetching fails, use fallback avatar
-                        System.out.println("[Discord] Failed to fetch avatar for user " + discordId + ": " + throwable.getMessage());
-                        sendWebhookMessage(name, content, fallbackAvatar);
+                if (cachedHytaleAvatar != null) {
+                    if (!cachedHytaleAvatar.isEmpty()) {
+                        // Hytale Tracker avatar is cached and available
+                        sendWebhookMessage(name, content, cachedHytaleAvatar);
+                        return;
                     }
-            );
+                    // Empty string means we already checked and it's unavailable — fall through
+                    sendWithDiscordAvatar(playerUuid, name, content, fallbackAvatar);
+                    return;
+                }
+
+                // Check Hytale Tracker asynchronously via HEAD request
+                String hytaleAvatarUrl = "https://hytaletracker.org/avatars/" + uuidStr + ".png";
+                HttpRequest request = HttpRequest.newBuilder()
+                        .uri(URI.create(hytaleAvatarUrl))
+                        .method("HEAD", HttpRequest.BodyPublishers.noBody())
+                        .timeout(java.time.Duration.ofSeconds(5))
+                        .build();
+
+                HTTP_CLIENT.sendAsync(request, HttpResponse.BodyHandlers.discarding())
+                        .thenAccept(response -> {
+                            if (response.statusCode() == 200) {
+                                AvatarCache.put(hytaleKey, hytaleAvatarUrl);
+                                sendWebhookMessage(name, content, hytaleAvatarUrl);
+                            } else {
+                                AvatarCache.put(hytaleKey, ""); // Mark as unavailable
+                                sendWithDiscordAvatar(playerUuid, name, content, fallbackAvatar);
+                            }
+                        })
+                        .exceptionally(throwable -> {
+                            System.out.println("[Discord] Failed to check Hytale Tracker avatar for " + uuidStr + ": " + throwable.getMessage());
+                            AvatarCache.put(hytaleKey, ""); // Mark as unavailable
+                            sendWithDiscordAvatar(playerUuid, name, content, fallbackAvatar);
+                            return null;
+                        });
+                return;
+            }
+
+            // No playerUuid (server messages etc.) — send with fallback avatar
+            sendWebhookMessage(name, content, fallbackAvatar);
         } catch (Exception e) {
             // Emergency fallback: if anything goes wrong, send the message anyway
             System.err.println("[Discord] Dispatch error: " + e.getMessage());
             e.printStackTrace();
             sendWebhookMessage(name, content, fallbackAvatar);
         }
+    }
+
+    /**
+     * Sends a webhook message using the player's linked Discord avatar, or the
+     * configured fallback if the player is not linked or the lookup fails.
+     */
+    private void sendWithDiscordAvatar(UUID playerUuid, String name, String content, String fallbackAvatar) {
+        final String discordId;
+        if (playerUuid != null) {
+            PlayerDataStorage storage = AbyssLink.getInstance().getPlayerDataStorage();
+            PlayerData playerData = storage.getPlayerData(playerUuid);
+            discordId = (playerData != null) ? playerData.getDiscordId() : null;
+        } else {
+            discordId = null;
+        }
+
+        if (discordId == null || jda == null) {
+            sendWebhookMessage(name, content, fallbackAvatar);
+            return;
+        }
+
+        // Try to get Discord avatar from cache
+        String cachedAvatar = AvatarCache.get(discordId);
+        if (cachedAvatar != null) {
+            sendWebhookMessage(name, content, cachedAvatar);
+            return;
+        }
+
+        // Fetch avatar from Discord API asynchronously
+        jda.retrieveUserById(discordId).queue(
+                user -> {
+                    String avatar = user.getEffectiveAvatarUrl();
+                    AvatarCache.put(discordId, avatar);
+                    sendWebhookMessage(name, content, avatar);
+                },
+                throwable -> {
+                    System.out.println("[Discord] Failed to fetch avatar for user " + discordId + ": " + throwable.getMessage());
+                    sendWebhookMessage(name, content, fallbackAvatar);
+                }
+        );
     }
 }
