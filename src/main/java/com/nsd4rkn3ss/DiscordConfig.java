@@ -50,7 +50,8 @@ public class DiscordConfig {
         private String discordToServer = "[Discord] <{user}> {message}";
         private String joinMessage = "**{player}** joined the server";
         private String leaveMessage = "**{player}** left the server";
-        private String deathMessage = "☠️ **{player}** was killed by {cause}";
+        private String deathMessageDied = "☠️ **{player}** died from {cause}";
+        private String deathMessageKilled = "⚔️ **{player}** was killed by {cause}";
         private String serverStartMessage = "🟢 **Server is now online!**";
         private String serverStopMessage = "🔴 **Server is shutting down...**";
 
@@ -58,7 +59,8 @@ public class DiscordConfig {
         public String getDiscordToServer() { return discordToServer; }
         public String getJoinMessage() { return joinMessage; }
         public String getLeaveMessage() { return leaveMessage; }
-        public String getDeathMessage() { return deathMessage; }
+        public String getDeathMessageDied() { return deathMessageDied; }
+        public String getDeathMessageKilled() { return deathMessageKilled; }
         public String getServerStartMessage() { return serverStartMessage; }
         public String getServerStopMessage() { return serverStopMessage; }
     }

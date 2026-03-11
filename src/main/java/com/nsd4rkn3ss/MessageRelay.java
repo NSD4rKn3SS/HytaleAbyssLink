@@ -68,7 +68,7 @@ public class MessageRelay {
         }
     }
 
-    public void sendDeathMessage(String playerName, String cause) {
+    public void sendDeathMessage(String playerName, String cause, String deathType) {
         if (!config.isEnableDeathMessages()) {
             return;
         }
@@ -76,9 +76,22 @@ public class MessageRelay {
         DiscordBot bot = AbyssLink.getInstance().discordBot;
         if (bot != null && bot.isConnected()) {
             String causeText = (cause == null || cause.isEmpty()) ? "unknown" : cause;
-            String formatted = config.getMessageFormat().getDeathMessage()
+            String typeText = (deathType == null || deathType.isEmpty()) ? "unknown" : deathType;
+            String formatted;
+
+            if (typeText === "killed") {
+                formatted = config.getMessageFormat().getDeathMessageKilled()
                 .replace("{player}", playerName)
                 .replace("{cause}", causeText);
+            } else if (typeText === "died" || typeText === "unknown") {
+                formatted = config.getMessageFormat().getDeathMessageDied()
+                .replace("{player}", playerName)
+                .replace("{cause}", causeText);
+            } else {
+                formatted = config.getMessageFormat().getDeathMessageDied()
+                .replace("{player}", playerName)
+                .replace("{cause}", causeText);
+            }
             
             // Use webhook with server identity for death messages
             if (config.isUseWebhooks()) {

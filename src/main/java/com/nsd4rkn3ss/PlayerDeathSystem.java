@@ -35,6 +35,7 @@ public class PlayerDeathSystem extends DeathSystems.OnDeathSystem {
             
             // Extract the death message from the component (what the client displays)
             String cause = "";
+            String deathType = "";
             try {
                 Message deathMessage = component.getDeathMessage();
                 if (deathMessage != null) {
@@ -45,18 +46,22 @@ public class PlayerDeathSystem extends DeathSystems.OnDeathSystem {
                     // Format is typically: "You were killed by <cause>" or "You died from <cause>" etc.
                     if (fullMessage.contains("You were killed by")) {
                         cause = fullMessage.replace("You were killed by ", "").trim();
+                        deathType = "killed";
                     } else if (fullMessage.contains("You were")) {
                         cause = fullMessage.replace("You were ", "").trim();
+                        deathType = "killed";
                     } else if (fullMessage.contains("You died")) {
                         cause = fullMessage.replace("You died", "").trim();
+                        deathType = "died";
                     } else {
                         cause = fullMessage.trim();
+                        deathType = "other";
                     }
                     
                     // Remove color codes if present
                     cause = cause.replaceAll("\\u00a7[0-9a-fA-Fk-oK-O]", "").trim();
                     
-                    System.out.println("[AbyssLink Discord] Extracted cause: " + cause);
+                    System.out.println("[AbyssLink Discord] Extracted cause: " + cause + " | death type: " + deathType)");
                 }
             } catch (Exception e) {
                 System.out.println("[AbyssLink Discord] Error extracting death message: " + e.getMessage());
@@ -65,7 +70,7 @@ public class PlayerDeathSystem extends DeathSystems.OnDeathSystem {
             // Notify Discord via the plugin instance
             AbyssLink plugin = AbyssLink.getInstance();
             if (plugin != null) {
-                plugin.notifyPlayerDeath(playerName, cause);
+                plugin.notifyPlayerDeath(playerName, cause, deathType);
             }
         }
     }
