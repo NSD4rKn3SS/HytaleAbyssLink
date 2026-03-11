@@ -102,6 +102,17 @@ public class DiscordBot extends ListenerAdapter {
         }
     }
 
+    public void sendMessageBlocking(String message) {
+        if (textChannel != null) {
+            try {
+                textChannel.sendMessage(message).complete();
+                System.out.println("[Discord] Message sent (sync): " + message);
+            } catch (Exception e) {
+                System.out.println("[Discord] Failed to send sync message: " + e.getMessage());
+            }
+        }
+    }
+
     @Override
     public void onMessageReceived(MessageReceivedEvent event) {
         String channelId = event.getChannel().getId();
@@ -377,6 +388,36 @@ public class DiscordBot extends ListenerAdapter {
             success -> System.out.println("[Discord] Updated channel description (topic) to: " + topic),
             error -> System.out.println("[Discord] Failed to update channel topic: " + error.getMessage())
         );
+    }
+
+    public void sendWebhookMessageBlocking(String username, String content, String avatarUrl) {
+        if (!config.isUseWebhooks() || config.getWebhookUrl() == null || config.getWebhookUrl().isEmpty()) {
+            sendMessageBlocking("**" + username + "**: " + content);
+            return;
+        }
+
+        JsonObject json = new JsonObject();
+        json.addProperty("username", username);
+        json.addProperty("content", content);
+        if (avatarUrl != null && !avatarUrl.isEmpty()) {
+            json.addProperty("avatar_url", avatarUrl);
+        }
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(config.getWebhookUrl()))
+                .header("Content-Type", "application/json")
+                .header("User-Agent", "HytaleDiscordIntegration/1.0")
+                .POST(HttpRequest.BodyPublishers.ofString(json.toString()))
+                .build();
+
+        try {
+            HttpResponse<String> response = HTTP_CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
+            if (response.statusCode() >= 400) {
+                System.err.println("[Discord] Webhook Error (sync): " + response.statusCode() + " - " + response.body());
+            }
+        } catch (Exception ex) {
+            System.err.println("[Discord] Webhook Network Error (sync): " + ex.getMessage());
+        }
     }
 
     /**

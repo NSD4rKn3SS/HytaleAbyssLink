@@ -89,7 +89,7 @@ public class AbyssLink extends JavaPlugin {
         getEventRegistry().register(com.hypixel.hytale.server.core.event.events.player.PlayerConnectEvent.class, this::onPlayerJoin);
         getEventRegistry().register(com.hypixel.hytale.server.core.event.events.player.PlayerDisconnectEvent.class, this::onPlayerLeave);
         getEventRegistry().register(BootEvent.class, this::onServerBoot);
-        getEventRegistry().register(ShutdownEvent.class, this::onServerShutdown);
+        getEventRegistry().register(ShutdownEvent.DISCONNECT_PLAYERS, ShutdownEvent.class, this::onServerShutdown);
         
         getCommandRegistry().registerCommand(new LinkCommand());
         getCommandRegistry().registerCommand(new ProfileCommand());
@@ -133,17 +133,28 @@ public class AbyssLink extends JavaPlugin {
     }
 
     public void onDisable() {
-        System.out.println("[AbyssLink Discord] Plugin disabling...");
-        
+        // Cleanup is handled by the shutdown() lifecycle method below.
+    }
+
+    @Override
+    protected void shutdown() {
+        System.out.println("[AbyssLink Discord] Plugin shutting down...");
+
+        // Send stop message synchronously BEFORE shutting down the bot
+        if (messageRelay != null) {
+            messageRelay.sendServerStopMessageBlocking();
+        }
+
         if (playerDataStorage != null) {
             playerDataStorage.saveAllPlayers();
         }
-        
+
         if (discordBot != null) {
             discordBot.shutdown();
         }
-        
+
         System.out.println("[AbyssLink Discord] Plugin disabled!");
+        super.shutdown();
     }
     
     private void onPlayerJoin(com.hypixel.hytale.server.core.event.events.player.PlayerConnectEvent event) {
@@ -184,7 +195,7 @@ public class AbyssLink extends JavaPlugin {
     
     private void onServerShutdown(ShutdownEvent event) {
         System.out.println("[AbyssLink Discord] Server shutdown event received");
-        handleServerStop();
+        // Stop message is sent synchronously in shutdown() to ensure delivery before bot disconnects
     }
 
     public void loadConfig() {

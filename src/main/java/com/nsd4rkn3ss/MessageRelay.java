@@ -116,4 +116,17 @@ public class MessageRelay {
             }
         }
     }
+
+    public void sendServerStopMessageBlocking() {
+        DiscordBot bot = AbyssLink.getInstance().discordBot;
+        if (bot != null && bot.isConnected()) {
+            String formatted = config.getMessageFormat().getServerStopMessage();
+
+            if (config.isUseWebhooks()) {
+                bot.sendWebhookMessageBlocking(config.getServerName(), formatted, config.getServerAvatarUrl());
+            } else {
+                bot.sendMessageBlocking(formatted);
+            }
+        }
+    }
 }
