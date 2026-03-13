@@ -119,6 +119,7 @@ public class DiscordConfigCommand extends AbstractPlayerCommand {
         player.sendMessage(Message.raw("showChatTag: " + config.isShowChatTag()));
         player.sendMessage(Message.raw("enableInGameChat: " + config.isEnableInGameChat()));
         player.sendMessage(Message.raw("enableDeathMessages: " + config.isEnableDeathMessages()));
+        player.sendMessage(Message.raw("enableJoinLeaveMessages: " + config.isEnableJoinLeaveMessages()));
         player.sendMessage(Message.raw("chatTagText: " + config.getChatTagText()));
         player.sendMessage(Message.raw("channelId: " + config.getChannelId()));
         player.sendMessage(Message.raw("commandChannelId: " + config.getCommandChannelId()));
@@ -150,6 +151,8 @@ public class DiscordConfigCommand extends AbstractPlayerCommand {
                 return config.isEnableInGameChat();
             case "enabledeathmessages":
                 return config.isEnableDeathMessages();
+            case "enablejoinleavemessages":
+                return config.isEnableJoinLeaveMessages();
             case "chattagtext":
                 return config.getChatTagText();
             case "channelid":
@@ -184,6 +187,9 @@ public class DiscordConfigCommand extends AbstractPlayerCommand {
                 break;
             case "enabledeathmessages":
                 config.setEnableDeathMessages(Boolean.parseBoolean(value));
+                break;
+            case "enablejoinleavemessages":
+                config.setEnableJoinLeaveMessages(Boolean.parseBoolean(value));
                 break;
             case "chattagtext":
                 config.setChatTagText(value.replace("\"", ""));

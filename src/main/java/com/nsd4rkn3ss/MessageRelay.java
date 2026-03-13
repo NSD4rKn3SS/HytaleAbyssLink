@@ -41,6 +41,7 @@ public class MessageRelay {
     }
 
     public void sendJoinMessage(String playerName) {
+        if (!config.isEnableJoinLeaveMessages()) return;
         DiscordBot bot = AbyssLink.getInstance().discordBot;
         if (bot != null && bot.isConnected()) {
             String formatted = messagesConfig.getMessageFormat().getJoinMessage()
@@ -56,6 +57,7 @@ public class MessageRelay {
     }
 
     public void sendLeaveMessage(String playerName) {
+        if (!config.isEnableJoinLeaveMessages()) return;
         DiscordBot bot = AbyssLink.getInstance().discordBot;
         if (bot != null && bot.isConnected()) {
             String formatted = messagesConfig.getMessageFormat().getLeaveMessage()

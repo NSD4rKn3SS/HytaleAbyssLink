@@ -21,6 +21,7 @@ public class DiscordConfig {
     // Functionality toggles
     private boolean allowOtherBotMessages = false;
     private boolean enableDeathMessages = true;
+    private boolean enableJoinLeaveMessages = true;
     private boolean showChatTag = true;
     private String chatTagText = "Linked";
     private boolean enableInGameChat = true;
@@ -64,6 +65,9 @@ public class DiscordConfig {
 
     public boolean isEnableDeathMessages() { return enableDeathMessages; }
     public void setEnableDeathMessages(boolean enableDeathMessages) { this.enableDeathMessages = enableDeathMessages; }
+    
+    public boolean isEnableJoinLeaveMessages() { return enableJoinLeaveMessages; }
+    public void setEnableJoinLeaveMessages(boolean enableJoinLeaveMessages) { this.enableJoinLeaveMessages = enableJoinLeaveMessages; }
     
     public String getChatTagText() { return chatTagText; }
     public void setChatTagText(String chatTagText) { this.chatTagText = chatTagText; }
