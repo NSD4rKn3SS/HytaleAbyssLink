@@ -131,6 +131,7 @@ public class DiscordConfigCommand extends AbstractPlayerCommand {
         LocaleManager locale = AbyssLink.getInstance().getLocaleManager();
         try {
             AbyssLink.getInstance().loadConfig();
+            AbyssLink.getInstance().loadMessagesConfig();
             player.sendMessage(Message.raw(locale.getMessage("command.discord.reload.success")));
         } catch (Exception e) {
             player.sendMessage(Message.raw(locale.getMessage("command.discord.reload.error", "error", e.getMessage())));

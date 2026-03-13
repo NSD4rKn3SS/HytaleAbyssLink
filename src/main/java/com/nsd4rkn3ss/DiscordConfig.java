@@ -31,7 +31,6 @@ public class DiscordConfig {
     private String locale = "en_US";
 
     private ChatTagColors chatTagColors = new ChatTagColors();
-    private MessageFormat messageFormat = new MessageFormat();    
 
     public static class ChatTagColors {
         private String bracketColor = "#808080";
@@ -43,24 +42,6 @@ public class DiscordConfig {
         public String getTagColor() { return tagColor; }
         public String getUsernameColor() { return usernameColor; }
         public String getMessageColor() { return messageColor; }
-    }
-
-    public static class MessageFormat {
-        private String serverToDiscord = "**{player}**: {message}";
-        private String discordToServer = "[Discord] <{user}> {message}";
-        private String joinMessage = "**{player}** joined the server";
-        private String leaveMessage = "**{player}** left the server";
-        private String deathMessage = "☠️ **{player}** {message}"; //{player}, {message}, {cause}, {source}, {damage}
-        private String serverStartMessage = "🟢 **Server is now online!**";
-        private String serverStopMessage = "🔴 **Server is shutting down...**";
-
-        public String getServerToDiscord() { return serverToDiscord; }
-        public String getDiscordToServer() { return discordToServer; }
-        public String getJoinMessage() { return joinMessage; }
-        public String getLeaveMessage() { return leaveMessage; }
-        public String getDeathMessage() { return deathMessage; }
-        public String getServerStartMessage() { return serverStartMessage; }
-        public String getServerStopMessage() { return serverStopMessage; }
     }
 
     public String getBotToken() { return botToken; }
@@ -104,7 +85,6 @@ public class DiscordConfig {
     }
 
     public ChatTagColors getChatTagColors() { return chatTagColors; }
-    public MessageFormat getMessageFormat() { return messageFormat; }
     
     // Webhook getters and setters
     public boolean isUseWebhooks() { return useWebhooks; }

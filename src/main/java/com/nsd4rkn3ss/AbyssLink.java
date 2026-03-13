@@ -30,6 +30,7 @@ public class AbyssLink extends JavaPlugin {
     private static AbyssLink instance;
     
     public DiscordConfig config;
+    public MessagesConfig messagesConfig;
     DiscordBot discordBot;
     private MessageRelay messageRelay;
     private PlayerDataStorage playerDataStorage;
@@ -49,6 +50,7 @@ public class AbyssLink extends JavaPlugin {
         System.out.println("[AbyssLink Discord] Made by NSD4rKn3SS");
 
         loadConfig();
+        loadMessagesConfig();
         
         File dataFolder = new File("mods/AbyssLink");
         playerDataStorage = new PlayerDataStorage(dataFolder);
@@ -63,7 +65,7 @@ public class AbyssLink extends JavaPlugin {
         localeManager.loadLocale(localeCode);
         System.out.println("[AbyssLink Discord] Loaded locale: " + localeCode);
         
-        messageRelay = new MessageRelay(config);
+        messageRelay = new MessageRelay(config, messagesConfig);
         
         discordBot = new DiscordBot(config, this::handleDiscordMessage);
 
@@ -266,6 +268,50 @@ public class AbyssLink extends JavaPlugin {
         }
     }
 
+    public void loadMessagesConfig() {
+        File messagesFile = new File("mods/AbyssLink/messages.json");
+        
+        if (!messagesFile.exists()) {
+            messagesFile.getParentFile().mkdirs();
+            messagesConfig = new MessagesConfig();
+            saveMessagesConfig(messagesFile);
+            System.out.println("[AbyssLink Discord] Created default messages config at: " + messagesFile.getAbsolutePath());
+        } else {
+            try (FileReader reader = new FileReader(messagesFile)) {
+                JsonElement parsed = JsonParser.parseReader(reader);
+                if (!parsed.isJsonObject()) {
+                    throw new IllegalStateException("Messages config root must be a JSON object");
+                }
+
+                JsonObject existingJson = parsed.getAsJsonObject();
+                JsonObject defaultsJson = gson.toJsonTree(new MessagesConfig()).getAsJsonObject();
+                boolean updated = mergeMissingJson(existingJson, defaultsJson);
+
+                if (updated) {
+                    try (FileWriter writer = new FileWriter(messagesFile)) {
+                        gson.toJson(existingJson, writer);
+                    }
+                    System.out.println("[AbyssLink Discord] Updated messages config with missing defaults");
+                }
+
+                messagesConfig = gson.fromJson(existingJson, MessagesConfig.class);
+                System.out.println("[AbyssLink Discord] Messages config loaded successfully");
+            } catch (Exception e) {
+                System.out.println("[AbyssLink Discord] Error loading messages config: " + e.getMessage());
+                messagesConfig = new MessagesConfig();
+                saveMessagesConfig(messagesFile);
+            }
+        }
+    }
+
+    public void saveMessagesConfig(File messagesFile) {
+        try (FileWriter writer = new FileWriter(messagesFile)) {
+            gson.toJson(messagesConfig, writer);
+        } catch (IOException e) {
+            System.out.println("[AbyssLink Discord] Error saving messages config: " + e.getMessage());
+        }
+    }
+
     private void handlePlayerChat(UUID playerUuid, String username, String message) {
         if (messageRelay != null && config.isEnableInGameChat()) {
             messageRelay.sendToDiscord(playerUuid, username, message);
@@ -284,14 +330,14 @@ public class AbyssLink extends JavaPlugin {
         }
     }
     
-    private void handlePlayerDeath(String username, String deathMessage, String causeId, String sourceType, float damageAmount) {
+    private void handlePlayerDeath(String username, String deathMessage, String causeId, String sourceName, float damageAmount) {
         if (messageRelay != null) {
-            messageRelay.sendDeathMessage(username, deathMessage, causeId, sourceType, damageAmount);
+            messageRelay.sendDeathMessage(username, deathMessage, causeId, sourceName, damageAmount);
         }
     }
 
-    public void notifyPlayerDeath(String username, String deathMessage, String causeId, String sourceType, float damageAmount) {
-        handlePlayerDeath(username, deathMessage, causeId, sourceType, damageAmount);
+    public void notifyPlayerDeath(String username, String deathMessage, String causeId, String sourceName, float damageAmount) {
+        handlePlayerDeath(username, deathMessage, causeId, sourceName, damageAmount);
     }
     
     private void handleServerStart() {
@@ -309,7 +355,7 @@ public class AbyssLink extends JavaPlugin {
     private void handleDiscordMessage(String username, String message) {
         System.out.println("[Discord -> Server] Received message from " + username + ": " + message);
         
-        String formattedMessage = config.getMessageFormat().getDiscordToServer()
+        String formattedMessage = messagesConfig.getMessageFormat().getDiscordToServer()
             .replace("{user}", username)
             .replace("{message}", message);
         

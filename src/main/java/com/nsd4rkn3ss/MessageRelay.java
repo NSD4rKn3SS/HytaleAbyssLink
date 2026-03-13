@@ -4,9 +4,11 @@ import java.util.UUID;
 
 public class MessageRelay {
     private final DiscordConfig config;
+    private final MessagesConfig messagesConfig;
 
-    public MessageRelay(DiscordConfig config) {
+    public MessageRelay(DiscordConfig config, MessagesConfig messagesConfig) {
         this.config = config;
+        this.messagesConfig = messagesConfig;
     }
 
     public void sendToDiscord(String playerName, String message) {
@@ -30,7 +32,7 @@ public class MessageRelay {
             String fallbackAvatar = config.getDefaultPlayerAvatarUrl();
             bot.dispatchToDiscord(playerUuid, playerName, message, fallbackAvatar);
         } else {
-            String formatted = config.getMessageFormat().getServerToDiscord()
+            String formatted = messagesConfig.getMessageFormat().getServerToDiscord()
                 .replace("{player}", playerName)
                 .replace("{message}", message);
             System.out.println("[AbyssLink Discord] Sending to Discord: " + formatted);
@@ -41,7 +43,7 @@ public class MessageRelay {
     public void sendJoinMessage(String playerName) {
         DiscordBot bot = AbyssLink.getInstance().discordBot;
         if (bot != null && bot.isConnected()) {
-            String formatted = config.getMessageFormat().getJoinMessage()
+            String formatted = messagesConfig.getMessageFormat().getJoinMessage()
                 .replace("{player}", playerName);
             
             // Use webhook with server identity for join messages
@@ -56,7 +58,7 @@ public class MessageRelay {
     public void sendLeaveMessage(String playerName) {
         DiscordBot bot = AbyssLink.getInstance().discordBot;
         if (bot != null && bot.isConnected()) {
-            String formatted = config.getMessageFormat().getLeaveMessage()
+            String formatted = messagesConfig.getMessageFormat().getLeaveMessage()
                 .replace("{player}", playerName);
             
             // Use webhook with server identity for leave messages
@@ -68,7 +70,7 @@ public class MessageRelay {
         }
     }
 
-    public void sendDeathMessage(String playerName, String deathMessageText, String causeId, String sourceType, float damageAmount) {
+    public void sendDeathMessage(String playerName, String deathMessageText, String causeId, String sourceName, float damageAmount) {
         if (!config.isEnableDeathMessages()) {
             return;
         }
@@ -77,9 +79,9 @@ public class MessageRelay {
         if (bot != null && bot.isConnected()) {
             String messageText = (deathMessageText == null || deathMessageText.isEmpty()) ? "died" : deathMessageText;
             String cause = (causeId == null || causeId.isEmpty()) ? "unknown" : causeId;
-            String source = (sourceType == null || sourceType.isEmpty()) ? "unknown" : sourceType;
+            String source = (sourceName == null || sourceName.isEmpty()) ? "" : sourceName;
             
-            String formatted = config.getMessageFormat().getDeathMessage()
+            String formatted = messagesConfig.getMessageFormat().getDeathMessage()
                     .replace("{player}", playerName)
                     .replace("{message}", messageText)
                     .replace("{cause}", cause)
@@ -98,7 +100,7 @@ public class MessageRelay {
     public void sendServerStartMessage() {
         DiscordBot bot = AbyssLink.getInstance().discordBot;
         if (bot != null && bot.isConnected()) {
-            String formatted = config.getMessageFormat().getServerStartMessage();
+            String formatted = messagesConfig.getMessageFormat().getServerStartMessage();
             
             // Use webhook with server identity for server start messages
             if (config.isUseWebhooks()) {
@@ -112,7 +114,7 @@ public class MessageRelay {
     public void sendServerStopMessage() {
         DiscordBot bot = AbyssLink.getInstance().discordBot;
         if (bot != null && bot.isConnected()) {
-            String formatted = config.getMessageFormat().getServerStopMessage();
+            String formatted = messagesConfig.getMessageFormat().getServerStopMessage();
             
             // Use webhook with server identity for server stop messages
             if (config.isUseWebhooks()) {
@@ -126,7 +128,7 @@ public class MessageRelay {
     public void sendServerStopMessageBlocking() {
         DiscordBot bot = AbyssLink.getInstance().discordBot;
         if (bot != null && bot.isConnected()) {
-            String formatted = config.getMessageFormat().getServerStopMessage();
+            String formatted = messagesConfig.getMessageFormat().getServerStopMessage();
 
             if (config.isUseWebhooks()) {
                 bot.sendWebhookMessageBlocking(config.getServerName(), formatted, config.getServerAvatarUrl());
