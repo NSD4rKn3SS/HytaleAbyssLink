@@ -65,16 +65,17 @@ Example:
   └─ AbyssLink/
     └─ locales
       └─ en_US.json
-    └─ config.yml
+    └─ config.json
+    └─ messages.json
 ```
 
 ### 3. Configure AbyssLink
 
-1. Open the generated config file in a text editor.
-2. Fill in your Discord settings (bot token, guild/server ID, channel IDs).
-3. Set message/formatting options as needed.
-4. (Optionally) Set the language you'd like to use (don't forget to copy the language file into the locales folder)
-5. Save the file.
+1. Open the generated `config.json` file in a text editor.
+2. (Optionally) Set the language you'd like to use (don't forget to copy the language file into the locales folder).
+3. Fill in your Discord settings (bot token, guild/server ID, channel IDs, etc) and save it.
+4. Open the generated `messages.json` file in a text editor.
+5. Set message/formatting options as needed and save it.
 
 ### 4. Discord bot setup checklist
 
