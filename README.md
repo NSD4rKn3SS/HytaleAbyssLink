@@ -39,7 +39,7 @@ Originally forked from [dkoz/HytaleDiscordIntegration](https://github.com/dkoz/H
 ## Tutorial
 ### 1. Download and place the mod
 
-1. Download the latest [`AbyssLink-1.0.3.jar`](https://github.com/NSD4rKn3SS/HytaleAbyssLink/releases/download/v1.0.3/AbyssLink-1.0.3.jar) release file.
+1. Download the latest [`AbyssLink-1.0.4.jar`](https://github.com/NSD4rKn3SS/HytaleAbyssLink/releases/download/v1.0.4/AbyssLink-1.0.4.jar) release file.
 2. Stop your Hytale server if it is running.
 3. Copy the downloaded `.jar` into your server’s **mods** folder.
 

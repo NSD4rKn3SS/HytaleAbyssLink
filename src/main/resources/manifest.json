@@ -1,7 +1,7 @@
 {
   "Group": "com.nsd4rkn3ss",
   "Name": "AbyssLink",
-  "Version": "1.0.3",
+  "Version": "1.0.4",
   "Description": "A Hytale server plugin to integrate with Discord using JDA. For Hytale version 2026.02.19-1a311a592",
   "Authors": [
     {

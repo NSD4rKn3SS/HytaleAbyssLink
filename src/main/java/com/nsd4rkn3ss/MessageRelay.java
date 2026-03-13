@@ -68,30 +68,23 @@ public class MessageRelay {
         }
     }
 
-    public void sendDeathMessage(String playerName, String cause, String deathType) {
+    public void sendDeathMessage(String playerName, String deathMessageText, String causeId, String sourceType, float damageAmount) {
         if (!config.isEnableDeathMessages()) {
             return;
         }
 
         DiscordBot bot = AbyssLink.getInstance().discordBot;
         if (bot != null && bot.isConnected()) {
-            String causeText = (cause == null || cause.isEmpty()) ? "unknown" : cause;
-            String typeText = (deathType == null || deathType.isEmpty()) ? "unknown" : deathType;
-            String formatted;
-
-            if (typeText === "killed") {
-                formatted = config.getMessageFormat().getDeathMessageKilled()
-                .replace("{player}", playerName)
-                .replace("{cause}", causeText);
-            } else if (typeText === "died" || typeText === "unknown") {
-                formatted = config.getMessageFormat().getDeathMessageDied()
-                .replace("{player}", playerName)
-                .replace("{cause}", causeText);
-            } else {
-                formatted = config.getMessageFormat().getDeathMessageDied()
-                .replace("{player}", playerName)
-                .replace("{cause}", causeText);
-            }
+            String messageText = (deathMessageText == null || deathMessageText.isEmpty()) ? "died" : deathMessageText;
+            String cause = (causeId == null || causeId.isEmpty()) ? "unknown" : causeId;
+            String source = (sourceType == null || sourceType.isEmpty()) ? "unknown" : sourceType;
+            
+            String formatted = config.getMessageFormat().getDeathMessage()
+                    .replace("{player}", playerName)
+                    .replace("{message}", messageText)
+                    .replace("{cause}", cause)
+                    .replace("{source}", source)
+                    .replace("{damage}", String.format("%.1f", damageAmount));
             
             // Use webhook with server identity for death messages
             if (config.isUseWebhooks()) {

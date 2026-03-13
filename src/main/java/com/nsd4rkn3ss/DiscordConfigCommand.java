@@ -34,13 +34,10 @@ public class DiscordConfigCommand extends AbstractPlayerCommand {
     ) {
         LocaleManager locale = AbyssLink.getInstance().getLocaleManager();
         
-        // Check permission using Hytale's permission system
-        // Get the player entity from the world to access hasPermission()
+        // Get the player entity from the store to access hasPermission()
         com.hypixel.hytale.server.core.entity.entities.Player playerEntity = 
-            world.getPlayers().stream()
-                .filter(p -> p.getUuid().equals(player.getUuid()))
-                .findFirst()
-                .orElse(null);
+            (com.hypixel.hytale.server.core.entity.entities.Player) store.getComponent(ref, 
+                com.hypixel.hytale.server.core.entity.entities.Player.getComponentType());
         
         if (playerEntity == null || !playerEntity.hasPermission("discordintegration.discord")) {
             player.sendMessage(Message.raw(locale.getMessage("command.discord.no_permission")));

@@ -6,6 +6,8 @@ import com.hypixel.hytale.component.Store;
 import com.hypixel.hytale.component.query.Query;
 import com.hypixel.hytale.server.core.Message;
 import com.hypixel.hytale.server.core.entity.entities.Player;
+import com.hypixel.hytale.server.core.modules.entity.damage.Damage;
+import com.hypixel.hytale.server.core.modules.entity.damage.DamageCause;
 import com.hypixel.hytale.server.core.modules.entity.damage.DeathComponent;
 import com.hypixel.hytale.server.core.modules.entity.damage.DeathSystems;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
@@ -29,49 +31,63 @@ public class PlayerDeathSystem extends DeathSystems.OnDeathSystem {
         
         Player playerComponent = (Player) store.getComponent(ref, Player.getComponentType());
         
-        if (playerComponent != null) {
-            String playerName = playerComponent.getDisplayName();
-            System.out.println("[AbyssLink Discord] Player died: " + playerName);
-            
-            // Extract the death message from the component (what the client displays)
-            String cause = "";
-            String deathType = "";
-            try {
-                Message deathMessage = component.getDeathMessage();
-                if (deathMessage != null) {
-                    String fullMessage = deathMessage.getAnsiMessage();
-                    System.out.println("[AbyssLink Discord] Full death message: " + fullMessage);
-                    
-                    // Extract the cause from the message by removing "You were " prefix
-                    // Format is typically: "You were killed by <cause>" or "You died from <cause>" etc.
-                    if (fullMessage.contains("You were killed by")) {
-                        cause = fullMessage.replace("You were killed by ", "").trim();
-                        deathType = "killed";
-                    } else if (fullMessage.contains("You were")) {
-                        cause = fullMessage.replace("You were ", "").trim();
-                        deathType = "killed";
-                    } else if (fullMessage.contains("You died")) {
-                        cause = fullMessage.replace("You died", "").trim();
-                        deathType = "died";
-                    } else {
-                        cause = fullMessage.trim();
-                        deathType = "other";
-                    }
-                    
-                    // Remove color codes if present
-                    cause = cause.replaceAll("\\u00a7[0-9a-fA-Fk-oK-O]", "").trim();
-                    
-                    System.out.println("[AbyssLink Discord] Extracted cause: " + cause + " | death type: " + deathType)");
+        if (playerComponent == null) {
+            return;
+        }
+        
+        String playerName = playerComponent.getDisplayName();
+        System.out.println("[AbyssLink Discord] Player died: " + playerName);
+        
+        // Use the structured Damage API for death info
+        Damage deathInfo = component.getDeathInfo();
+        DamageCause damageCause = component.getDeathCause();
+        
+        String causeId = (damageCause != null) ? damageCause.getId() : "unknown";
+        float damageAmount = (deathInfo != null) ? deathInfo.getAmount() : 0f;
+        
+        // Get the canonical death message from the Damage source
+        String deathMessageText = "";
+        try {
+            if (deathInfo != null) {
+                Message deathMsg = deathInfo.getDeathMessage(ref, store);
+                if (deathMsg != null) {
+                    deathMessageText = deathMsg.getRawText();
                 }
-            } catch (Exception e) {
-                System.out.println("[AbyssLink Discord] Error extracting death message: " + e.getMessage());
             }
-            
-            // Notify Discord via the plugin instance
-            AbyssLink plugin = AbyssLink.getInstance();
-            if (plugin != null) {
-                plugin.notifyPlayerDeath(playerName, cause, deathType);
+            // Fall back to the DeathComponent's own message if Damage didn't produce one
+            if (deathMessageText.isEmpty()) {
+                Message fallbackMsg = component.getDeathMessage();
+                if (fallbackMsg != null) {
+                    deathMessageText = fallbackMsg.getRawText();
+                }
             }
+        } catch (Exception e) {
+            System.out.println("[AbyssLink Discord] Error retrieving death message: " + e.getMessage());
+        }
+        
+        // Determine source type for richer context
+        String sourceType = "environment";
+        if (deathInfo != null) {
+            Damage.Source source = deathInfo.getSource();
+            if (source instanceof Damage.EntitySource) {
+                sourceType = "entity";
+            } else if (source instanceof Damage.ProjectileSource) {
+                sourceType = "projectile";
+            } else if (source instanceof Damage.CommandSource) {
+                sourceType = "command";
+            } else if (source instanceof Damage.EnvironmentSource) {
+                sourceType = ((Damage.EnvironmentSource) source).getType();
+            }
+        }
+        
+        System.out.println("[AbyssLink Discord] Death cause: " + causeId 
+                + " | source: " + sourceType 
+                + " | damage: " + damageAmount
+                + " | message: " + deathMessageText);
+        
+        AbyssLink plugin = AbyssLink.getInstance();
+        if (plugin != null) {
+            plugin.notifyPlayerDeath(playerName, deathMessageText, causeId, sourceType, damageAmount);
         }
     }
 }

@@ -284,14 +284,14 @@ public class AbyssLink extends JavaPlugin {
         }
     }
     
-    private void handlePlayerDeath(String username, String cause) {
+    private void handlePlayerDeath(String username, String deathMessage, String causeId, String sourceType, float damageAmount) {
         if (messageRelay != null) {
-            messageRelay.sendDeathMessage(username, cause, deathType);
+            messageRelay.sendDeathMessage(username, deathMessage, causeId, sourceType, damageAmount);
         }
     }
 
-    public void notifyPlayerDeath(String username, String cause, String deathType) {
-        handlePlayerDeath(username, cause, deathType);
+    public void notifyPlayerDeath(String username, String deathMessage, String causeId, String sourceType, float damageAmount) {
+        handlePlayerDeath(username, deathMessage, causeId, sourceType, damageAmount);
     }
     
     private void handleServerStart() {
